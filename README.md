@@ -141,3 +141,18 @@ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 ```
 #### 2.在线安装方式 🌐
 当系统中不存在离线安装包时，脚本会尝试在线安装：
+
+
+
+d:\project\shell\
+├── install_containers.sh          # 主脚本
+├── common\
+│   └── utils.sh                   # 公共函数库
+└── containers\
+    ├── mysql.sh                   # MySQL容器安装脚本
+    ├── redis.sh                   # Redis容器安装脚本
+    ├── nginx.sh                   # Nginx容器安装脚本
+    ├── mongodb.sh                 # MongoDB容器安装脚本
+    ├── rabbitmq.sh                # RabbitMQ容器安装脚本
+    ├── elasticsearch.sh           # Elasticsearch容器安装脚本
+    └── portainer.sh               # Portainer容器安装脚本
