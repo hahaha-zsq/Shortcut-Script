@@ -45,13 +45,13 @@ chmod +x linux.sh install_containers.sh
 ```
 ### 2. 运行主脚本 ▶️
 ```bash
-source linux.sh [离线安装包目录]
+source ./linux.sh [离线安装包目录]
 或者
 . linux.sh [离线安装包目录]
 ```
 参数说明：
 
-- [离线安装包目录] ：可选参数，指定离线安装包的目录路径，默认为 "usr/offline/packages/"
+- [离线安装包目录] ：可选参数，指定离线安装包的目录路径，默认为 "usr/offline/packages/",主要用来存放`docker-compose-linux-x86_64`包,名字只能为这个
 
 ### 3. 交互式安装过程 🔄
 1. 首先会询问是否更新 yum 源：

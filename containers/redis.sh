@@ -141,6 +141,24 @@ services:
     command: redis-server /etc/redis/redis.conf"
 fi
 
+# 检查 docker-compose.yml 文件是否已存在
+compose_file="$container_dir/docker-compose.yml"
+if [ -f "$compose_file" ]; then
+  print_color "yellow" "检测到已存在的 docker-compose.yml 文件，是否覆盖？[y/n] (默认: n):"
+  read overwrite
+  overwrite=${overwrite:-n}
+  
+  if [ "$overwrite" == "y" ]; then
+    # 备份原有配置文件
+    backup_file="${compose_file}.backup.$(date +%Y%m%d_%H%M%S)"
+    sudo cp "$compose_file" "$backup_file"
+    print_info "已备份原有配置文件到: $backup_file"
+  else
+    print_warning "保留原有配置文件，跳过创建新的配置文件"
+    exit 0
+  fi
+fi
+
 create_compose_file "$container_dir" "$compose_content"
 
 # 启动容器
