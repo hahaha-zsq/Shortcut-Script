@@ -10,6 +10,21 @@ source "${SCRIPT_DIR}/common/utils.sh"
 
 # 记录脚本开始时间
 start_time=$(date +%s)
+# 显示当前系统Docker镜像状态
+print_title "当前系统Docker镜像状态"
+print_info "已下载的Docker镜像列表："
+docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
+echo ""
+
+# 显示当前系统容器状态
+print_title "当前系统容器状态"
+print_info "已安装的容器列表："
+docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+echo ""
+print_info "正在运行的容器列表："
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+echo ""
+
 
 # 创建Docker网络
 print_title "创建Docker网络"
@@ -53,7 +68,7 @@ print_info "脚本开始执行时间: $(date)"
 echo ""
 
 # 可供选择的容器列表
-containers=("mysql" "redis" "nginx" "mongodb" "rabbitmq" "elasticsearch" "退出")
+containers=("mysql" "redis" "nginx" "mongodb" "rabbitmq" "minio" "elasticsearch" "xxl-job" "退出")
 
 # 用户选择安装的容器列表
 selected_containers=()
