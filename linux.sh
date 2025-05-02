@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common/utils.sh"
 
 # 默认离线安装目录
-offline_dir="/usr/offline/packages/"
+offline_dir="/offline/packages/"
 
 # 检查是否有指定的离线目录参数
 if [ ! -z "$1" ]; then

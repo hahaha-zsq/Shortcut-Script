@@ -25,13 +25,13 @@ server=${server:-127.0.0.1}
 
 
 # 询问MinIO端口
-print_color "yellow" "请输入宿主机MinIO服务端口 (默认: 9886):"
+print_color "yellow" "请输入宿主机MinIO服务端口 (默认: 9090):"
 read minio_port
-minio_port=${minio_port:-9886}
+minio_port=${minio_port:-9090}
 
-print_color "yellow" "请输入宿主机MinIO控制台端口 (默认: 9090):"
+print_color "yellow" "请输入宿主机MinIO控制台端口 (默认: 9886):"
 read console_port
-console_port=${console_port:-9090}
+console_port=${console_port:-9886}
 
 # 询问MinIO访问凭证
 print_color "yellow" "请输入MinIO访问用户名 (默认: minioadmin):"
@@ -61,14 +61,14 @@ services:
     environment:
       - MINIO_ROOT_USER=${minio_root_user}
       - MINIO_ROOT_PASSWORD=${minio_root_password}
-      - MINIO_SERVER_URL=${minio_server_url}
+      - MINIO_SERVER_URL=http://${server}:${console_port}
     ports:
-      - ${minio_port}:9886
-      - ${console_port}:9000
+      - ${minio_port}:9090
+      - ${console_port}:9886
     volumes:
       - ./data:/data
       - ./config:/root/.minio
-    command: server /data --console-address ":9000" --address ":9886"
+    command: server /data --console-address ":9090" --address ":9886"
     networks:
       - ${network_name}
 networks:
@@ -84,14 +84,14 @@ services:
     environment:
       - MINIO_ROOT_USER=${minio_root_user}
       - MINIO_ROOT_PASSWORD=${minio_root_password}
-      - MINIO_SERVER_URL=${minio_server_url}
+      - MINIO_SERVER_URL=http://${server}:${console_port}
     ports:
-      - ${minio_port}:9886
-      - ${console_port}:9000
+      - ${minio_port}:9090
+      - ${console_port}:9886
     volumes:
       - ./data:/data
       - ./config:/root/.minio
-    command: server /data --console-address ":9000" --address ":9886"
+    command: server /data --console-address ":9090" --address ":9886" 
 fi
 
 # 检查 docker-compose.yml 文件是否已存在
@@ -127,10 +127,9 @@ if [ $? -eq 0 ]; then
   print_info "  - 控制台端口: $console_port"
   print_info "  - 访问用户名: $minio_root_user"
   print_info "  - 访问密码: $minio_root_password"
-  print_info "  - 服务器URL: $minio_server_url"
   print_info "  - 配置目录: $container_dir"
-  print_info "  - API访问地址: $minio_server_url"
-  print_info "  - 控制台访问地址: http://${server}:${console_port}"
+  print_info "  - 访问地址: $minio_server_url"
+  print_info "  - 后台访问地址: http://${server}:${console_port}"
 else
   print_error "MinIO 容器启动失败"
   exit 1

@@ -17,8 +17,11 @@ print_info "配置 XXL-JOB 容器..."
 # 询问XXL-JOB版本
 xxl_job_version=${xxl_job_version:-2.4.0}
 
+print_color "yellow" "请输入服务器IP地址 (默认: 127.0.0.1):"
+read server
+server=${server:-127.0.0.1}
 # 询问端口
-print_color "yellow" "请输入XXL-JOB端口 (默认: 7379):"
+print_color "yellow" "请输入宿主机的XXL-JOB端口 (默认: 7379):"
 read xxl_job_port
 xxl_job_port=${xxl_job_port:-7379}
 
@@ -41,6 +44,47 @@ mysql_password=${mysql_password:-password}
 
 # 创建XXL-JOB目录
 ensure_dir "$container_dir/logs"
+
+# 检查是否需要初始化数据库
+print_color "yellow" "是否需要初始化XXL-JOB数据库？[y/n] (默认: y):"
+read init_db
+init_db=${init_db:-y}
+if [ "$init_db" == "y" ]; then
+  print_progress "正在初始化XXL-JOB数据库..."
+  
+  # 检查SQL脚本是否存在
+  print_color "yellow" "请输入SQL脚本路径 (默认: /offline/packages/xxl-job.sql):"
+  read sql_script_path
+  sql_script_path=${sql_script_path:-"/offline/packages/xxl-job.sql"}
+  
+  # 检查SQL脚本是否存在
+  if [ ! -f "$sql_script_path" ]; then
+    print_error "SQL脚本不存在: $sql_script_path"
+    exit 1
+  fi
+  
+  # 询问MySQL容器名称
+  print_color "yellow" "请输入MySQL容器名称 (默认: mysql8):"
+  read mysql_container
+  mysql_container=${mysql_container:-"mysql8"}
+  
+  # 在MySQL容器内执行SQL脚本
+  print_info "正在MySQL容器内执行SQL脚本..."
+  cat "$sql_script_path" | docker exec -i "$mysql_container" mysql -u"$mysql_username" -p"$mysql_password" --default-character-set=utf8
+  
+  if [ $? -eq 0 ]; then
+    print_success "XXL-JOB数据库初始化成功"
+  else
+    print_error "XXL-JOB数据库初始化失败"
+    print_info "请尝试手动在MySQL容器中执行SQL脚本:"
+    print_info "1. 复制SQL脚本到容器:"
+    print_info "   docker cp \"$sql_script_path\" \"$mysql_container\":/tmp/xxl-job.sql"
+    print_info "2. 进入容器执行脚本:"
+    print_info "   docker exec -it \"$mysql_container\" bash"
+    print_info "3. 在容器内执行:"
+    print_info "   mysql -u\"$mysql_username\" -p\"$mysql_password\" < /tmp/xxl-job.sql"
+  fi
+fi
 
 # 生成docker-compose.yml文件
 if [ "$join_network" == "y" ]; then
@@ -106,7 +150,7 @@ if [ $? -eq 0 ]; then
   print_info "  - 版本: $xxl_job_version"
   print_info "  - 宿主机端口: $xxl_job_port"
   print_info "  - 配置目录: $container_dir"
-  print_info "  - 访问地址: http://localhost:$xxl_job_port/xxl-job-admin/toLogin"
+  print_info "  - 访问地址: http://$server:$xxl_job_port/xxl-job-admin/toLogin"
   print_info "  - 默认登录账号: admin"
   print_info "  - 默认登录密码: 123456"
 else
