@@ -153,6 +153,7 @@ if [ $? -eq 0 ]; then
   print_info "  - 访问地址: http://$server:$xxl_job_port/xxl-job-admin/toLogin"
   print_info "  - 默认登录账号: admin"
   print_info "  - 默认登录密码: 123456"
+  print_warning "请确保在防火墙中开放 $xxl_job_port 端口，以便外部网络能够访问XXL-JOB管理界面"
 else
   print_error "XXL-JOB 容器启动失败"
   exit 1

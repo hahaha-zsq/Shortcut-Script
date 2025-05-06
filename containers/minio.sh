@@ -16,7 +16,7 @@ print_info "配置 MinIO 容器..."
 
 
 # 询问MinIO版本
-minio_version=${minio_version:-RELEASE.2022-10-29T06-21-33Z}
+minio_version=${minio_version:-RELEASE.2025-03-12T18-04-18Z}
 
 print_color "yellow" "请输入服务器IP地址 (默认: 127.0.0.1):"
 read server
@@ -33,14 +33,30 @@ print_color "yellow" "请输入宿主机MinIO控制台端口 (默认: 9886):"
 read console_port
 console_port=${console_port:-9886}
 
-# 询问MinIO访问凭证
-print_color "yellow" "请输入MinIO访问用户名 (默认: minioadmin):"
-read minio_root_user
-minio_root_user=${minio_root_user:-minioadmin}
+# 询问MinIO访问凭证并验证长度
+while true; do
+  print_color "yellow" "请输入MinIO访问用户名 (默认: minioadmin, 至少3个字符):"
+  read minio_root_user
+  minio_root_user=${minio_root_user:-minioadmin}
+  
+  if [ ${#minio_root_user} -lt 3 ]; then
+    print_error "错误: 用户名长度必须至少为3个字符"
+  else
+    break
+  fi
+done
 
-print_color "yellow" "请输入MinIO访问密码 (默认: minioadmin):"
-read minio_root_password
-minio_root_password=${minio_root_password:-minioadmin}
+while true; do
+  print_color "yellow" "请输入MinIO访问密码 (默认: minioadmin, 至少8个字符):"
+  read minio_root_password
+  minio_root_password=${minio_root_password:-minioadmin}
+  
+  if [ ${#minio_root_password} -lt 8 ]; then
+    print_error "错误: 密码长度必须至少为8个字符"
+  else
+    break
+  fi
+done
 
 # 构建MinIO服务器URL
 minio_server_url="http://${server}:${minio_port}"
@@ -68,7 +84,7 @@ services:
     volumes:
       - ./data:/data
       - ./config:/root/.minio
-    command: server /data --console-address ":9090" --address ":9886"
+    command: server /data --console-address \":9090\" --address \":9886\"
     networks:
       - ${network_name}
 networks:
@@ -91,7 +107,7 @@ services:
     volumes:
       - ./data:/data
       - ./config:/root/.minio
-    command: server /data --console-address ":9090" --address ":9886" 
+    command: server /data --console-address \":9090\" --address \":9886\""
 fi
 
 # 检查 docker-compose.yml 文件是否已存在
@@ -130,6 +146,7 @@ if [ $? -eq 0 ]; then
   print_info "  - 配置目录: $container_dir"
   print_info "  - 访问地址: $minio_server_url"
   print_info "  - 后台访问地址: http://${server}:${console_port}"
+  print_warning "请确保在防火墙中开放 $minio_port 和 $console_port 端口，以便外部网络能够访问MinIO服务和控制台"
 else
   print_error "MinIO 容器启动失败"
   exit 1

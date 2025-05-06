@@ -177,6 +177,7 @@ if [ $? -eq 0 ]; then
     print_info "  - 连接命令: redis-cli -h 127.0.0.1 -p $redis_port"
   fi
   print_info "  - 配置目录: $container_dir"
+  print_warning "请确保在防火墙中开放 $redis_port 端口，以便外部网络能够访问Redis服务"
 else
   print_error "Redis 容器启动失败"
   exit 1

@@ -156,7 +156,7 @@ if [ $? -eq 0 ]; then
   print_info "  - 密码: $mysql_password"
   print_info "  - 配置目录: $container_dir"
   print_info "  - 连接命令: mysql  -P $mysql_port -u root -p"
-
+  print_warning "请确保在防火墙中开放 $mysql_port 端口，以便外部网络能够访问MySQL服务"
 
   sleep 5
   # 询问是否创建新用户

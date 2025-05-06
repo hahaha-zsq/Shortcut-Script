@@ -68,7 +68,7 @@ print_info "脚本开始执行时间: $(date)"
 echo ""
 
 # 可供选择的容器列表
-containers=("mysql" "redis" "nginx" "mongodb" "rabbitmq" "minio" "elasticsearch" "xxl-job" "退出")
+containers=("mysql" "redis" "nginx" "mongodb" "rabbitmq" "minio" "elasticsearch" "xxl-job" "milvus" "退出")
 
 # 用户选择安装的容器列表
 selected_containers=()
